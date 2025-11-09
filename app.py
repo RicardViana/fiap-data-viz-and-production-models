@@ -1,14 +1,18 @@
 # Importar biblioteca completa
 import streamlit as st
 import pandas as pd
+import joblib
 
 # Importar algo especifico de uma biblioteca
 from sklearn.model_selection import train_test_split
+from utils import DropFeatures, OneHotEncodingNames, OrdinalFeature, MinMaxWithFeatNames
+from sklearn.pipeline import Pipeline
+from joblib import load
 
 # Criar Funções (df) 
 def data_split (df, teste_size):
     SEED = 1561651
-    treino_df, teste_df = train_test_split(df, teste_size = teste_size, random_state=SEED)
+    treino_df, teste_df = train_test_split(df, test_size = teste_size, random_state=SEED)
     return treino_df.reset_index(drop=True), teste_df.reset_index(drop=True)
 
 def pipeline_teste(df):
@@ -118,8 +122,8 @@ novo_cliente = [
 
 # Separar a base em treino e teste
 treino_df, teste_df = data_split(dados, 0.2)
-cliente_predict_df = pd.DataFrame([novo_cliente], columns=teste_df.colums)
-teste_novo_cliente = pd.concat([teste_df, cliente_predict_df], columns=teste_df.columns)
+cliente_predict_df = pd.DataFrame([novo_cliente], columns=teste_df.columns)
+teste_novo_cliente = pd.concat([teste_df, cliente_predict_df], ignore_index=True)
 
 # Rodar o pipeline
 teste_novo_cliente = pipeline_teste(teste_novo_cliente)
@@ -127,9 +131,13 @@ cliente_pred = teste_novo_cliente.drop(['Mau'], axis =1)
 
 # Fazer a predição
 if st.button('Enviar'):
+
     model = joblib.load('modelo/xgb.joblib')
     final_pred = model.predict(cliente_pred)
+
     if final_pred[-1] == 0:
         st.success('### Parabéns! Você teve o cartão de crédito aprovado')
         st.balloons()
 
+    else:
+        st.error('### Infelizmente, não podemos liberar o crédito para você agora')
