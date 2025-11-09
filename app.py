@@ -26,7 +26,6 @@ def pipeline_teste(df):
     df_pipeline = pipeline.fit_transform(df)
     return df_pipeline
 
-
 # Importar base tratada
 link = 'https://raw.githubusercontent.com/RicardViana/fiap-data-viz-and-production-models/refs/heads/main/df_clean.csv'
 dados = pd.read_csv(link, sep= ",")
@@ -128,6 +127,59 @@ teste_novo_cliente = pd.concat([teste_df, cliente_predict_df], ignore_index=True
 # Rodar o pipeline
 teste_novo_cliente = pipeline_teste(teste_novo_cliente)
 cliente_pred = teste_novo_cliente.drop(['Mau'], axis =1)
+
+# Reordernar os dados
+colunas_do_modelo = [
+    'Categoria_de_renda_Associado comercial',
+    'Categoria_de_renda_Empregado',
+    'Categoria_de_renda_Estudante', 
+    'Categoria_de_renda_Pensionista', 
+    'Categoria_de_renda_Servidor público', 
+    'Estado_civil_Casado', 
+    'Estado_civil_Divorciado', 
+    'Estado_civil_Solteiro', 
+    'Estado_civil_União-estável', 
+    'Estado_civil_Viúvo', 
+    'Moradia_Apartamento alugado', 
+    'Moradia_Apartamento comercial', 
+    'Moradia_Casa/apartamento próprio', 
+    'Moradia_Cooperativa habitacional', 
+    'Moradia_Habitação pública ', 
+    'Moradia_Mora com os pais', 
+    'Ocupacao_Alta tecnologia', 
+    'Ocupacao_Baixa qualificação', 
+    'Ocupacao_Construção Civil', 
+    'Ocupacao_Contabilidade', 
+    'Ocupacao_Corretor imobiliário', 
+    'Ocupacao_Cozinha', 
+    'Ocupacao_Equipe principal', 
+    'Ocupacao_Garçom', 
+    'Ocupacao_Gerência', 
+    'Ocupacao_Limpeza', 
+    'Ocupacao_Medicina', 
+    'Ocupacao_Motorista', 
+    'Ocupacao_Outros', 
+    'Ocupacao_RH', 
+    'Ocupacao_Secretariado', 
+    'Ocupacao_Segurança', 
+    'Ocupacao_Serviço privado', 
+    'Ocupacao_TI', 
+    'Ocupacao_Vendas', 
+    'Tem_carro', 
+    'Tem_casa_propria', 
+    'Tem_telefone_trabalho', 
+    'Tem_telefone_fixo', 
+    'Tem_email', 
+    'Tamanho_familia', 
+    'Rendimento_anual', 
+    'Idade', 
+    'Anos_empregado', 
+    'Grau_escolaridade'] 
+
+if 'Ocupacao_Outro' in cliente_pred.columns:
+    cliente_pred.rename(columns={'Ocupacao_Outro': 'Ocupacao_Outros'}, inplace=True)
+
+cliente_pred = cliente_pred.reindex(columns=colunas_do_modelo, fill_value=0)
 
 # Fazer a predição
 if st.button('Enviar'):
