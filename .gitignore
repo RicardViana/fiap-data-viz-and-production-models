@@ -1,6 +1,9 @@
 # Ignorar arquivos e pasta
 *
+
+# Não ignorar
 !*.ipynb
+!*.py
 !.gitignore
 !README.md
 *.zip
